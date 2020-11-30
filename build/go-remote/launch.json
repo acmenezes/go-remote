@@ -1,0 +1,11 @@
+{
+  "name": "Remote",
+  "type": "go",
+  "request": "launch",
+  "mode": "remote",
+  "remotePath": "/root/go/src/test/test-remote-debug",
+  "port": 2345,
+  "host": "10.142.114.151",
+  "program": "C:/Users/EricS/go/src/test/test-remote-debug",
+  "env": {}
+}
