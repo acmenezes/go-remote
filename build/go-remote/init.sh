@@ -9,3 +9,7 @@ mkdir -p go/src/github.com/acmenezes/
 git clone https://github.com/acmenezes/podconfig-operator.git  go/src/github.com/acmenezes/podconfig-operator
 cd go/src/github.com/acmenezes/podconfig-operator
 dlv debug --listen=:2345 --headless=true --log --api-version=2
+
+
+  git config --global user.email "you@example.com"
+  git config --global user.name "Your Name"

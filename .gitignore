@@ -15,3 +15,5 @@
 # vendor/
 
 kubeconfig
+
+secret.yaml
