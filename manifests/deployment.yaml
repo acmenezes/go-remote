@@ -32,6 +32,9 @@ spec:
         # image: linuxserver/openssh-server:latest
         # image: quay.io/acmenezes/c7-systemd:latest
         image: quay.io/acmenezes/go-remote:latest
+        # image: centos:7
+        # command: [ "/bin/bash", "-c", "--" ]
+        # args: [ "while true; do sleep 30; done;" ]        
         imagePullPolicy: Always
         ports:
           - containerPort: 2222
@@ -45,6 +48,10 @@ spec:
             name: crio-sock
           - mountPath: /etc/ssh/authorized_keys
             name: ssh-key
+          # - mountPath: /etc/supervisor/supervisord.conf
+          #   name: supervisord
+          # - mountPath: /etc/ssh/sshd_config
+          #   name: sshd
       volumes:
       - name: proc
         hostPath:
@@ -59,3 +66,15 @@ spec:
       - name: ssh-key
         secret:
           secretName: secret-ssh-auth
+      # - name: supervisord
+      #   configMap:
+      #     name: supervisord
+      #     items:
+      #     - key: "supervisord.conf"
+      #       path: "supervisord.conf"
+      # - name: sshd 
+      #   configMap:
+      #     name: sshd
+      #     items:
+      #     - key: "sshd_config"
+      #       path: "sshd_config"
