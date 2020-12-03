@@ -23,23 +23,17 @@ spec:
         app: go-remote
     spec:
       serviceAccountName: podconfig-operator-sa
-      # initContainers:
-      # - name: git-cloner
-      #   image: alpine/git
-      #   args:
-      #       - clone
-      #       - --single-branch
-      #       - --
-      #       - https://github.com/jmutai/hello-world-nginx.git
-      #       - /data               
+      initContainers:
+        - name: gitclone
+          image: alpine:3.7
+          command: ["/bin/sh","-c"]
+          args: ['apk add --no-cache git && git config --global http.sslVerify "false" && git clone https://github.com/acmenezes/podconfig-operator.git /tmp']
+          volumeMounts:
+            - name: gitrepo
+              mountPath: /tmp                 
       containers: 
       - name: go-remote      
-        # image: linuxserver/openssh-server:latest
-        # image: quay.io/acmenezes/c7-systemd:latest
-        image: quay.io/acmenezes/go-remote:latest
-        # image: centos:7
-        # command: [ "/bin/bash", "-c", "--" ]
-        # args: [ "while true; do sleep 30; done;" ]        
+        image: quay.io/acmenezes/go-remote:latest      
         imagePullPolicy: Always
         ports:
           - containerPort: 2222
@@ -51,12 +45,10 @@ spec:
             name: proc
           - mountPath: /var/run/crio/crio.sock
             name: crio-sock
-          - mountPath: /etc/ssh/authorized_keys
-            name: ssh-key
-          # - mountPath: /etc/supervisor/supervisord.conf
-          #   name: supervisord
-          # - mountPath: /etc/ssh/sshd_config
-          #   name: sshd
+          # - mountPath: /etc/ssh/authorized_keys
+          #   name: ssh-key
+          - name: gitrepo
+            mountPath: /root/go/src/github.com/project/podconfig-operator/           
       volumes:
       - name: proc
         hostPath:
@@ -65,21 +57,11 @@ spec:
           type: Directory
       - name: crio-sock
         hostPath:
-          # Mounting the proc file system to get process namespaces
+          # Mounting the crio socket to inspect containers
           path: /var/run/crio/crio.sock
           type: Socket
-      - name: ssh-key
-        secret:
-          secretName: secret-ssh-auth
-      # - name: supervisord
-      #   configMap:
-      #     name: supervisord
-      #     items:
-      #     - key: "supervisord.conf"
-      #       path: "supervisord.conf"
-      # - name: sshd 
-      #   configMap:
-      #     name: sshd
-      #     items:
-      #     - key: "sshd_config"
-      #       path: "sshd_config"
+      # - name: ssh-key
+      #   secret:
+      #     secretName: secret-ssh-auth
+      - name: gitrepo 
+        emptyDir: {}
