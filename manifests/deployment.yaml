@@ -23,11 +23,16 @@ spec:
         app: go-remote
     spec:
       serviceAccountName: podconfig-operator-sa
-      containers:
-      # - command:
-      #   - /manager
+      # initContainers:
+      # - name: git-cloner
+      #   image: alpine/git
       #   args:
-      #   - --enable-leader-election
+      #       - clone
+      #       - --single-branch
+      #       - --
+      #       - https://github.com/jmutai/hello-world-nginx.git
+      #       - /data               
+      containers: 
       - name: go-remote      
         # image: linuxserver/openssh-server:latest
         # image: quay.io/acmenezes/c7-systemd:latest
