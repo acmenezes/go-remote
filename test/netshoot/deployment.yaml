@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: privileged-netshoot
+  namespace: ocp-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: ocp-test
+  template:
+    metadata:
+      labels:
+        name: ocp-test
+    spec:
+      serviceAccountName: privileged-netshoot-sa
+      containers:
+        - name: privileged-netshoot
+          image: nicolaka/netshoot
+          command: [ "/bin/bash", "-c", "--" ]
+          args: [ "while true; do sleep 30; done;" ]
+          imagePullPolicy: Always
+          securityContext:
+            privileged: true
+          volumeMounts:
+              - mountPath: /proc
+                name: proc
+      volumes:
+      - name: proc
+        hostPath:
+          # Mounting the proc file system to get process namespaces
+          path: /proc
+          type: Directory                

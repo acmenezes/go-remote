@@ -101,6 +101,9 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+export GOBIN=/usr/local/go/bin/
+export PATH=$PATH:$GOBIN
+export PATH=$PATH:$HOME/go/bin
 
 # redefine prompt_context for hiding user@hostname
 prompt_context () { }

@@ -15,9 +15,6 @@ chmod +x operator-sdk-v1.2.0-x86_64-linux-gnu; \
 mv operator-sdk-v1.2.0-x86_64-linux-gnu /usr/local/bin/operator-sdk; \
 wget https://mirror.openshift.com/pub/openshift-v4/clients/ocp/4.6.6/openshift-client-linux-4.6.6.tar.gz; \
 tar -C /usr/local/bin/ -xzf openshift-client-linux-4.6.6.tar.gz; \
-echo 'export GOBIN=/usr/local/go/bin/' >> /root/.bashrc; \
-echo 'export PATH=$PATH:$GOBIN' >> /root/.bashrc; \
-echo 'export PATH=$PATH:$HOME/go/bin' >> /root/.bashrc; \
 mkdir -p /root/go/src/github.com/project; echo "root:go1234" | chpasswd; /usr/bin/ssh-keygen -A; \
 chsh -s /bin/zsh; wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh;
 
