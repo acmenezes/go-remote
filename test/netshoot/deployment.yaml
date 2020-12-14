@@ -4,7 +4,7 @@ metadata:
   name: privileged-netshoot
   namespace: ocp-test
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       name: ocp-test
@@ -25,6 +25,8 @@ spec:
           volumeMounts:
               - mountPath: /proc
                 name: proc
+      nodeSelector:
+        app: ocp-test
       volumes:
       - name: proc
         hostPath:
