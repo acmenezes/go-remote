@@ -1,0 +1,24 @@
+# permissions for end users to edit goremotes.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: goremote-editor-role
+rules:
+- apiGroups:
+  - go-remote.opdev.io
+  resources:
+  - goremotes
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - go-remote.opdev.io
+  resources:
+  - goremotes/status
+  verbs:
+  - get

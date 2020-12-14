@@ -1,0 +1,7 @@
+apiVersion: go-remote.opdev.io/v1alpha1
+kind: GoRemote
+metadata:
+  name: goremote-sample
+spec:
+  # Add fields here
+  foo: bar
