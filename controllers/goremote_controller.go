@@ -19,7 +19,13 @@ package controllers
 import (
 	"context"
 
+	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
+	"sigs.k8s.io/controller-runtime/pkg/reconcile"
+
 	"github.com/go-logr/logr"
+	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -30,24 +36,100 @@ import (
 // GoRemoteReconciler reconciles a GoRemote object
 type GoRemoteReconciler struct {
 	client.Client
-	Log    logr.Logger
-	Scheme *runtime.Scheme
+	Log          logr.Logger
+	Scheme       *runtime.Scheme
+	GoRemoteList *goremotev1alpha1.GoRemoteList
 }
 
 // +kubebuilder:rbac:groups=go-remote.opdev.io,resources=goremotes,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=go-remote.opdev.io,resources=goremotes/status,verbs=get;update;patch
 
+// Reconcile runs the logic controlling GoRemote instances
 func (r *GoRemoteReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	_ = context.Background()
 	_ = r.Log.WithValues("goremote", req.NamespacedName)
 
-	// your logic here
+	// get the list of goRemote CRs loop through them
+	r.GoRemoteList = &goremotev1alpha1.GoRemoteList{}
+	err := r.Client.List(context.TODO(), r.GoRemoteList)
 
-	return ctrl.Result{}, nil
+	if err != nil {
+		return reconcile.Result{}, err
+	}
+
+	if len(r.GoRemoteList.Items) <= 0 {
+		return reconcile.Result{}, nil
+	}
+
+	// create one deployment per CR
+	for _, goRemote := range r.GoRemoteList.Items {
+
+		deploy := r.newDeploymentForGoRemote(&goRemote)
+		err := r.Client.Create(context.TODO(), deploy)
+		if err != nil {
+			return reconcile.Result{}, err
+		}
+
+	}
+
+	return reconcile.Result{}, nil
 }
 
+// SetupWithManager register the controller with K8S manager instance
 func (r *GoRemoteReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&goremotev1alpha1.GoRemote{}).
 		Complete(r)
+}
+
+func (r *GoRemoteReconciler) newDeploymentForGoRemote(goRemote *goremotev1alpha1.GoRemote) runtime.Object {
+
+	var replicas int32 = 1
+	var privileged bool = true
+
+	deploy := &appsv1.Deployment{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "go-remote",
+			Namespace: "cnf-test",
+		},
+		Spec: appsv1.DeploymentSpec{
+			Replicas: &replicas,
+			// Selector: &metav1.LabelSelector{
+			// 	MatchLabels: ls,
+			// },
+			Template: corev1.PodTemplateSpec{
+				ObjectMeta: metav1.ObjectMeta{
+					Labels: map[string]string{"app": "go-remote"},
+				},
+				Spec: corev1.PodSpec{
+					ServiceAccountName: "podconfig-operator-sa",
+					Containers: []corev1.Container{{
+						Name:            "go-remote",
+						Image:           "quay.io/acmenezes/go-remote:latest",
+						ImagePullPolicy: corev1.PullAlways,
+						SecurityContext: &corev1.SecurityContext{
+							Privileged: &privileged,
+						},
+						// VolumeMounts: []corev1.VolumeMount{
+						// 	{Name: "webhook-certs",
+						// 		MountPath: "/etc/webhook/certs",
+						// 		ReadOnly:  true},
+						// },
+						// Volumes: []corev1.Volume{{
+						// 	Name: "webhook-certs",
+						// 	VolumeSource: corev1.VolumeSource{
+						// 		Secret: &corev1.SecretVolumeSource{
+						// 			SecretName: webhookSecretName,
+						// 		},
+						// 	},
+						// },
+					},
+					},
+				},
+			},
+		},
+	}
+	// Set GoRemote instance as the owner and controller
+	controllerutil.SetControllerReference(goRemote, deploy, r.Scheme)
+	return deploy
 }
