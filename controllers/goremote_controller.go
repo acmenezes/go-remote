@@ -86,17 +86,19 @@ func (r *GoRemoteReconciler) newDeploymentForGoRemote(goRemote *goremotev1alpha1
 
 	var replicas int32 = 1
 	var privileged bool = true
-
+	var hostPathTypeDir = corev1.HostPathDirectory
+	var hostPathTypeSock = corev1.HostPathSocket
 	deploy := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "go-remote",
 			Namespace: "cnf-test",
+			Labels:    map[string]string{"app": "go-remote"},
 		},
 		Spec: appsv1.DeploymentSpec{
 			Replicas: &replicas,
-			// Selector: &metav1.LabelSelector{
-			// 	MatchLabels: ls,
-			// },
+			Selector: &metav1.LabelSelector{
+				MatchLabels: map[string]string{"app": "go-remote"},
+			},
 			Template: corev1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
 					Labels: map[string]string{"app": "go-remote"},
@@ -105,25 +107,51 @@ func (r *GoRemoteReconciler) newDeploymentForGoRemote(goRemote *goremotev1alpha1
 					ServiceAccountName: "podconfig-operator-sa",
 					Containers: []corev1.Container{{
 						Name:            "go-remote",
-						Image:           "quay.io/acmenezes/go-remote:latest",
+						Image:           goRemote.Spec.GoRemoteImage,
 						ImagePullPolicy: corev1.PullAlways,
 						SecurityContext: &corev1.SecurityContext{
 							Privileged: &privileged,
 						},
-						// VolumeMounts: []corev1.VolumeMount{
-						// 	{Name: "webhook-certs",
-						// 		MountPath: "/etc/webhook/certs",
-						// 		ReadOnly:  true},
-						// },
-						// Volumes: []corev1.Volume{{
-						// 	Name: "webhook-certs",
-						// 	VolumeSource: corev1.VolumeSource{
-						// 		Secret: &corev1.SecretVolumeSource{
-						// 			SecretName: webhookSecretName,
-						// 		},
-						// 	},
-						// },
+						Ports: goRemote.Spec.ContainerPorts,
+
+						VolumeMounts: []corev1.VolumeMount{
+							{Name: "proc",
+								MountPath: "/tmp/proc",
+								ReadOnly:  true},
+							{Name: "crio-sock",
+								MountPath: "/var/run/crio/crio.sock",
+								ReadOnly:  true},
+							{Name: "gitrepo",
+								MountPath: "/root/go/src/github.com/project/podconfig-operator/",
+								ReadOnly:  true},
+						},
 					},
+					},
+					Volumes: []corev1.Volume{
+						{
+							Name: "proc",
+							VolumeSource: corev1.VolumeSource{
+								HostPath: &corev1.HostPathVolumeSource{
+									Path: "/proc",
+									Type: &hostPathTypeDir,
+								},
+							},
+						},
+						{
+							Name: "crio-sock",
+							VolumeSource: corev1.VolumeSource{
+								HostPath: &corev1.HostPathVolumeSource{
+									Path: "/var/run/crio/crio.sock",
+									Type: &hostPathTypeSock,
+								},
+							},
+						},
+						{
+							Name: "gitrepo",
+							VolumeSource: corev1.VolumeSource{
+								EmptyDir: &corev1.EmptyDirVolumeSource{},
+							},
+						},
 					},
 				},
 			},

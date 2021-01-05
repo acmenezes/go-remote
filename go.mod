@@ -1,5 +1,3 @@
-module github.com/acmenezes/go-remote
-
 go 1.13
 
 require (
@@ -12,3 +10,5 @@ require (
 	k8s.io/client-go v0.18.6
 	sigs.k8s.io/controller-runtime v0.6.2
 )
+
+module github.com/acmenezes/go-remote

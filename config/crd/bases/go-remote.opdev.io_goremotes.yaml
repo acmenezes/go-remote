@@ -36,9 +36,48 @@ spec:
           spec:
             description: GoRemoteSpec defines the desired state of GoRemote
             properties:
-              foo:
-                description: Foo is an example field of GoRemote. Edit GoRemote_types.go
-                  to remove/update
+              containerPorts:
+                description: ContainerPorts are the ports that should be exposed by
+                  the go-remote container for the servive being developed
+                items:
+                  description: ContainerPort represents a network port in a single
+                    container.
+                  properties:
+                    containerPort:
+                      description: Number of port to expose on the pod's IP address.
+                        This must be a valid port number, 0 < x < 65536.
+                      format: int32
+                      type: integer
+                    hostIP:
+                      description: What host IP to bind the external port to.
+                      type: string
+                    hostPort:
+                      description: Number of port to expose on the host. If specified,
+                        this must be a valid port number, 0 < x < 65536. If HostNetwork
+                        is specified, this must match ContainerPort. Most containers
+                        do not need this.
+                      format: int32
+                      type: integer
+                    name:
+                      description: If specified, this must be an IANA_SVC_NAME and
+                        unique within the pod. Each named port in a pod must have
+                        a unique name. Name for the port that can be referred to by
+                        services.
+                      type: string
+                    protocol:
+                      description: Protocol for port. Must be UDP, TCP, or SCTP. Defaults
+                        to "TCP".
+                      type: string
+                  required:
+                  - containerPort
+                  type: object
+                type: array
+              gitRepo:
+                description: GitRepo is the project under development URL in github,
+                  gitlab or any git based server
+                type: string
+              goRemoteImage:
+                description: GoRemoteImage is the base image to run the environment
                 type: string
             type: object
           status:

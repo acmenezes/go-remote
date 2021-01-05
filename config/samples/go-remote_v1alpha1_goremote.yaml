@@ -4,4 +4,8 @@ metadata:
   name: goremote-sample
 spec:
   # Add fields here
-  foo: bar
+  goRemoteImage: quay.io/acmenezes/go-remote:latest
+  gitRepo: https://github.com/acmenezes/pod-network-operator.git
+  containerPorts:
+    - containerPort: 2222
+      

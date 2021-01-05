@@ -17,6 +17,7 @@ limitations under the License.
 package v1alpha1
 
 import (
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -28,8 +29,17 @@ type GoRemoteSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	// Foo is an example field of GoRemote. Edit GoRemote_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	// GoRemoteImage is the base image to run the environment
+	GoRemoteImage string `json:"goRemoteImage,omitempty"`
+	// GitRepo is the project under development URL in github, gitlab or any git based server
+	GitRepo string `json:"gitRepo,omitempty"`
+	// ContainerPorts are the ports that should be exposed by the go-remote container
+	// for the servive being developed
+	ContainerPorts []corev1.ContainerPort `json:"containerPorts,omitempty"`
+
+	// Extra volumes that should be mounted for the container
+	// Volumes      []corev1.Volume      `json:"Volumes,omitempty"`
+	// VolumeMounts []corev1.VolumeMount `json:"VolumeMounts,omitempty"`
 }
 
 // GoRemoteStatus defines the observed state of GoRemote
