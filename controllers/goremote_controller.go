@@ -105,27 +105,41 @@ func (r *GoRemoteReconciler) newDeploymentForGoRemote(goRemote *goremotev1alpha1
 				},
 				Spec: corev1.PodSpec{
 					ServiceAccountName: "podconfig-operator-sa",
-					Containers: []corev1.Container{{
-						Name:            "go-remote",
-						Image:           goRemote.Spec.GoRemoteImage,
-						ImagePullPolicy: corev1.PullAlways,
-						SecurityContext: &corev1.SecurityContext{
-							Privileged: &privileged,
-						},
-						Ports: goRemote.Spec.ContainerPorts,
-
-						VolumeMounts: []corev1.VolumeMount{
-							{Name: "proc",
-								MountPath: "/tmp/proc",
-								ReadOnly:  true},
-							{Name: "crio-sock",
-								MountPath: "/var/run/crio/crio.sock",
-								ReadOnly:  true},
-							{Name: "gitrepo",
-								MountPath: "/root/go/src/github.com/project/podconfig-operator/",
-								ReadOnly:  true},
+					InitContainers: []corev1.Container{
+						{
+							Name:    "gitclone",
+							Image:   "alpine:3.7",
+							Command: []string{"/bin/sh", "-c"},
+							Args:    []string{"apk add --no-cache git && git config --global http.sslVerify 'false' && git clone https://github.com/acmenezes/podconfig-operator.git /tmp"},
+							VolumeMounts: []corev1.VolumeMount{
+								{Name: "gitrepo",
+									MountPath: "/tmp",
+								},
+							},
 						},
 					},
+					Containers: []corev1.Container{
+						{
+							Name:            "go-remote",
+							Image:           goRemote.Spec.GoRemoteImage,
+							ImagePullPolicy: corev1.PullAlways,
+							SecurityContext: &corev1.SecurityContext{
+								Privileged: &privileged,
+							},
+							Ports: goRemote.Spec.ContainerPorts,
+
+							VolumeMounts: []corev1.VolumeMount{
+								{Name: "proc",
+									MountPath: "/tmp/proc",
+									ReadOnly:  true},
+								{Name: "crio-sock",
+									MountPath: "/var/run/crio/crio.sock",
+									ReadOnly:  true},
+								{Name: "gitrepo",
+									MountPath: "/root/go/src/github.com/project/podconfig-operator/",
+									ReadOnly:  true},
+							},
+						},
 					},
 					Volumes: []corev1.Volume{
 						{
