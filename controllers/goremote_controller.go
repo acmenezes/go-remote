@@ -27,6 +27,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/util/intstr"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
@@ -70,6 +71,12 @@ func (r *GoRemoteReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 			return reconcile.Result{}, err
 		}
 
+		service := r.newServiceForGoRemote(&goRemote)
+		err = r.Client.Create(context.TODO(), service)
+		if err != nil {
+			return reconcile.Result{}, err
+		}
+
 	}
 
 	return reconcile.Result{}, nil
@@ -80,6 +87,28 @@ func (r *GoRemoteReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&goremotev1alpha1.GoRemote{}).
 		Complete(r)
+}
+
+func (r *GoRemoteReconciler) newServiceForGoRemote(goRemote *goremotev1alpha1.GoRemote) runtime.Object {
+
+	service := &corev1.Service{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "go-remote-svc",
+			Namespace: "cnf-test",
+			Labels:    map[string]string{"app": "go-remote"},
+		},
+
+		Spec: corev1.ServiceSpec{
+			Ports: []corev1.ServicePort{
+				{Name: "ssh", Port: 2222, TargetPort: intstr.FromInt(2222), Protocol: corev1.ProtocolTCP},
+			},
+			Type:     corev1.ServiceTypeLoadBalancer,
+			Selector: map[string]string{"app": "go-remote"},
+		},
+	}
+	// Set GoRemote instance as the owner and controller
+	controllerutil.SetControllerReference(goRemote, service, r.Scheme)
+	return service
 }
 
 func (r *GoRemoteReconciler) newDeploymentForGoRemote(goRemote *goremotev1alpha1.GoRemote) runtime.Object {
