@@ -5,7 +5,29 @@ metadata:
 spec:
   # Add fields here
   goRemoteImage: quay.io/acmenezes/go-remote:latest
-  gitRepo: https://github.com/acmenezes/pod-network-operator.git
+  gitRepo: https://github.com/acmenezes/podconfig-operator.git
   containerPorts:
     - containerPort: 2222
-      
+    - containerPort: 2345
+
+  VolumeMounts:
+    - mountPath: /tmp/proc
+      name: proc
+    - mountPath: /var/run/crio/crio.sock
+      name: crio-sock
+    - name: gitrepo
+      mountPath: /root/go/src/github.com/project/podconfig-operator/
+
+  Volumes:
+    - name: proc
+      hostPath:
+        # Mounting the proc file system to get process namespaces
+        path: /proc
+        type: Directory
+    - name: crio-sock
+      hostPath:
+        # Mounting the crio socket to inspect containers
+        path: /var/run/crio/crio.sock
+        type: Socket
+    - name: gitrepo 
+      emptyDir: {}

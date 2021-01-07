@@ -37,9 +37,12 @@ type GoRemoteSpec struct {
 	// for the servive being developed
 	ContainerPorts []corev1.ContainerPort `json:"containerPorts,omitempty"`
 
+	// Service ports
+	ServicePorts []corev1.ServicePort
+
 	// Extra volumes that should be mounted for the container
-	// Volumes      []corev1.Volume      `json:"Volumes,omitempty"`
-	// VolumeMounts []corev1.VolumeMount `json:"VolumeMounts,omitempty"`
+	Volumes      []corev1.Volume      `json:"Volumes,omitempty"`
+	VolumeMounts []corev1.VolumeMount `json:"VolumeMounts,omitempty"`
 }
 
 // GoRemoteStatus defines the observed state of GoRemote

@@ -101,6 +101,7 @@ func (r *GoRemoteReconciler) newServiceForGoRemote(goRemote *goremotev1alpha1.Go
 		Spec: corev1.ServiceSpec{
 			Ports: []corev1.ServicePort{
 				{Name: "ssh", Port: 2222, TargetPort: intstr.FromInt(2222), Protocol: corev1.ProtocolTCP},
+				{Name: "delve", Port: 2345, TargetPort: intstr.FromInt(2345), Protocol: corev1.ProtocolTCP},
 			},
 			Type:     corev1.ServiceTypeLoadBalancer,
 			Selector: map[string]string{"app": "go-remote"},
@@ -115,8 +116,8 @@ func (r *GoRemoteReconciler) newDeploymentForGoRemote(goRemote *goremotev1alpha1
 
 	var replicas int32 = 1
 	var privileged bool = true
-	var hostPathTypeDir = corev1.HostPathDirectory
-	var hostPathTypeSock = corev1.HostPathSocket
+	// var hostPathTypeDir = corev1.HostPathDirectory
+	// var hostPathTypeSock = corev1.HostPathSocket
 	deploy := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "go-remote",
@@ -139,7 +140,7 @@ func (r *GoRemoteReconciler) newDeploymentForGoRemote(goRemote *goremotev1alpha1
 							Name:    "gitclone",
 							Image:   "alpine:3.7",
 							Command: []string{"/bin/sh", "-c"},
-							Args:    []string{"apk add --no-cache git && git config --global http.sslVerify 'false' && git clone https://github.com/acmenezes/podconfig-operator.git /tmp"},
+							Args:    []string{"apk add --no-cache git && git config --global http.sslVerify 'false' && git clone " + goRemote.Spec.GitRepo + " /tmp"},
 							VolumeMounts: []corev1.VolumeMount{
 								{Name: "gitrepo",
 									MountPath: "/tmp",
@@ -157,45 +158,10 @@ func (r *GoRemoteReconciler) newDeploymentForGoRemote(goRemote *goremotev1alpha1
 							},
 							Ports: goRemote.Spec.ContainerPorts,
 
-							VolumeMounts: []corev1.VolumeMount{
-								{Name: "proc",
-									MountPath: "/tmp/proc",
-									ReadOnly:  true},
-								{Name: "crio-sock",
-									MountPath: "/var/run/crio/crio.sock",
-									ReadOnly:  true},
-								{Name: "gitrepo",
-									MountPath: "/root/go/src/github.com/project/podconfig-operator/",
-									ReadOnly:  true},
-							},
+							VolumeMounts: goRemote.Spec.VolumeMounts,
 						},
 					},
-					Volumes: []corev1.Volume{
-						{
-							Name: "proc",
-							VolumeSource: corev1.VolumeSource{
-								HostPath: &corev1.HostPathVolumeSource{
-									Path: "/proc",
-									Type: &hostPathTypeDir,
-								},
-							},
-						},
-						{
-							Name: "crio-sock",
-							VolumeSource: corev1.VolumeSource{
-								HostPath: &corev1.HostPathVolumeSource{
-									Path: "/var/run/crio/crio.sock",
-									Type: &hostPathTypeSock,
-								},
-							},
-						},
-						{
-							Name: "gitrepo",
-							VolumeSource: corev1.VolumeSource{
-								EmptyDir: &corev1.EmptyDirVolumeSource{},
-							},
-						},
-					},
+					Volumes: goRemote.Spec.Volumes,
 				},
 			},
 		},
