@@ -5,7 +5,7 @@ metadata:
 spec:
   # Add fields here
   goRemoteImage: quay.io/acmenezes/go-remote:latest
-  gitRepo: https://github.com/acmenezes/podconfig-operator.git
+  gitRepo: https://github.com/opdev/podconfig-operator.git
   containerPorts:
     - containerPort: 2222
     - containerPort: 2345

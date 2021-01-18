@@ -27,8 +27,8 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
-	goremotev1alpha1 "github.com/acmenezes/go-remote/api/v1alpha1"
-	"github.com/acmenezes/go-remote/controllers"
+	goremotev1alpha1 "github.com/opdev/go-remote/api/v1alpha1"
+	"github.com/opdev/go-remote/controllers"
 	// +kubebuilder:scaffold:imports
 )
 

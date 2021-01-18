@@ -1,7 +1,7 @@
 domain: opdev.io
 layout: go.kubebuilder.io/v2
 projectName: go-remote
-repo: github.com/acmenezes/go-remote
+repo: github.com/opdev/go-remote
 resources:
 - group: go-remote
   kind: GoRemote

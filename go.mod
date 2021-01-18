@@ -11,4 +11,4 @@ require (
 	sigs.k8s.io/controller-runtime v0.6.2
 )
 
-module github.com/acmenezes/go-remote
+module github.com/opdev/go-remote
