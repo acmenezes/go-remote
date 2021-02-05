@@ -12,8 +12,8 @@ spec:
     port: 2222
     targetPort: 2222
     protocol: TCP
-  - name: delve
-    port: 2345
-    targetPort: 2345
-    protocol: TCP    
+  # - name: delve
+  #   port: 2345
+  #   targetPort: 2345
+  #   protocol: TCP    
   type: LoadBalancer
