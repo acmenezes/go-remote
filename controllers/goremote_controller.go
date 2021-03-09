@@ -94,7 +94,7 @@ func (r *GoRemoteReconciler) newServiceForGoRemote(goRemote *goremotev1alpha1.Go
 	service := &corev1.Service{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "go-remote-svc",
-			Namespace: "cnf-test",
+			Namespace: goRemote.Spec.OperatorNamespace,
 			Labels:    map[string]string{"app": "go-remote"},
 		},
 
@@ -121,7 +121,7 @@ func (r *GoRemoteReconciler) newDeploymentForGoRemote(goRemote *goremotev1alpha1
 	deploy := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "go-remote",
-			Namespace: "cnf-test",
+			Namespace: goRemote.Spec.OperatorNamespace,
 			Labels:    map[string]string{"app": "go-remote"},
 		},
 		Spec: appsv1.DeploymentSpec{
@@ -134,7 +134,7 @@ func (r *GoRemoteReconciler) newDeploymentForGoRemote(goRemote *goremotev1alpha1
 					Labels: map[string]string{"app": "go-remote"},
 				},
 				Spec: corev1.PodSpec{
-					ServiceAccountName: "podconfig-operator-sa",
+					ServiceAccountName: goRemote.Spec.ServiceAccount,
 					InitContainers: []corev1.Container{
 						{
 							Name:    "gitclone",

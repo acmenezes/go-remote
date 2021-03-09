@@ -4,7 +4,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: role-scc-privileged
-  namespace: cnf-test
+  namespace: pod-network-operator
 rules:
 - apiGroups:
   - security.openshift.io 
@@ -18,13 +18,13 @@ rules:
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: rolebinding-priv-scc-podconfig-operator
-  namespace: cnf-test
+  name: rolebinding-priv-scc-pod-network-operator
+  namespace: pod-network-operator
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
   name: role-scc-privileged
 subjects:
   - kind: ServiceAccount
-    name: podconfig-operator-sa
-    namespace: cnf-test
+    name: pod-network-operator-sa
+    namespace: pod-network-operator

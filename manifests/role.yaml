@@ -13,9 +13,9 @@ rules:
   verbs:
   - '*'
 - apiGroups:
-  - podconfig.opdev.io
+  - podnetwork.opdev.io
   resources:
-  - podconfigs
+  - bridges
   verbs:
   - create
   - delete
@@ -25,9 +25,41 @@ rules:
   - update
   - watch
 - apiGroups:
-  - podconfig.opdev.io
+  - podnetwork.opdev.io
   resources:
-  - podconfigs/status
+  - bridges/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - podnetwork.opdev.io
+  resources:
+  - bridges/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - podnetwork.opdev.io
+  resources:
+  - podnetworkconfigs
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - podnetwork.opdev.io
+  resources:
+  - podnetworkconfigs/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - podnetwork.opdev.io
+  resources:
+  - podnetworkconfigs/status
   verbs:
   - get
   - patch
@@ -39,7 +71,7 @@ kind: Role
 metadata:
   creationTimestamp: null
   name: manager-role
-  namespace: cnf-test
+  namespace: pod-network-operator
 rules:
 - apiGroups:
   - apps

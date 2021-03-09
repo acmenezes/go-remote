@@ -8,8 +8,8 @@ roleRef:
   name: manager-role
 subjects:
 - kind: ServiceAccount
-  name: podconfig-operator-sa
-  namespace: cnf-test
+  name: pod-network-operator-sa
+  namespace: pod-network-operator
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -21,5 +21,5 @@ roleRef:
   name: manager-role
 subjects:
 - kind: ServiceAccount
-  name: podconfig-operator-sa
-  namespace: cnf-test
+  name: pod-network-operator-sa
+  namespace: pod-network-operator

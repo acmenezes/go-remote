@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    control-plane: podconfig-operator
+  name: cnf-test
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-remote
+  namespace: cnf-test
+  labels:
+    app: go-remote
+spec:
+  selector:
+    matchLabels:
+      app: go-remote
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: go-remote
+    spec:
+      serviceAccountName: podconfig-operator-sa
+      initContainers:
+        - name: gitclone
+          image: alpine:3.7
+          command: ["/bin/sh","-c"]
+          args: ['apk add --no-cache git && git config --global http.sslVerify "false" && git clone https://github.com/opdev/podconfig-operator.git /tmp']
+          volumeMounts:
+            - name: gitrepo
+              mountPath: /tmp                 
+      containers: 
+      - name: go-remote      
+        image: quay.io/acmenezes/go-remote:latest      
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 2222
+          - containerPort: 2345
+        securityContext:
+          privileged: true
+        volumeMounts:
+          - mountPath: /tmp/proc
+            name: proc
+          - mountPath: /var/run/crio/crio.sock
+            name: crio-sock
+          # - mountPath: /etc/ssh/authorized_keys
+          #   name: ssh-key
+          - name: gitrepo
+            mountPath: /root/go/src/github.com/project/podconfig-operator/           
+      volumes:
+      - name: proc
+        hostPath:
+          # Mounting the proc file system to get process namespaces
+          path: /proc
+          type: Directory
+      - name: crio-sock
+        hostPath:
+          # Mounting the crio socket to inspect containers
+          path: /var/run/crio/crio.sock
+          type: Socket
+      # - name: ssh-key
+      #   secret:
+      #     secretName: secret-ssh-auth
+      - name: gitrepo 
+        emptyDir: {}

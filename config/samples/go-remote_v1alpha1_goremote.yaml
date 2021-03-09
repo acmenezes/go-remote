@@ -30,3 +30,6 @@ spec:
         type: Socket
     - name: gitrepo 
       emptyDir: {}
+  
+  serviceAccount: "pod-network-operator-sa"
+  operatorNamespace: "pod-network-operator"
