@@ -36,17 +36,17 @@ Here is a high level overview of the go remote development environment and how i
 <img src='docs/img/go-remote-arch.png'></img>
 
 <br><br>
-1. VS Code requires an SSH connection to the remote development environment. Through SSH it can run the VS Code Server and coordinate through extensions the IDE actions or tasks remotely. The SSH port is exposed externally via a Kubernetes service. If you are running Kubernetes or an OpenShift cluster in a Cloud Service Provider it will spin up a service with type LoadBalancer and expose SSH on port 2222. On how to use it instructions you will see how to get the LB url in order to connect your local VS Code to the remote environment.
+1. VS Code requires an SSH connection to the remote development environment. Through SSH it can run the VS Code Server and coordinate, through extensions, the IDE actions or tasks remotely. The SSH port is exposed externally via a Kubernetes service. If you are running Kubernetes or an OpenShift cluster in a Cloud Service Provider it will spin up a service with type LoadBalancer and expose SSH on port 2222. On how to use it instructions you will see how to get the LB url in order to connect your local VS Code to the remote environment.
 <br>
 2. The container itself can expose multiple different ports. It will be exposing SSH through port 2222 in order to avoid requesting privileges to bind low number ports. This will be the backend port for the VS Code / Go Remote service. Those ports are exposed through Supervisord that runs inside the Pod. It may be configured to expose multiple different ports for multiple processes/containers in the same Pod. The goal is to be able to mimic any application behavior on the development environment and still have extra ports like the 2222 for remote debugging.
 <br>
 3. The VS Code server is the one that does the hard work. It will coordinate the debugging actions on the remote code tree that will be accessed from the Go Remote Pod. If you want to understand better how VS Code remote works check out [here](https://code.visualstudio.com/docs/remote/remote-overview). Please remark that remote container development on VS Code documentation at this point in time is not remote Kubernetes development. It is for running VS Code from a local container running on the developers machine. Not on a cluster worker node.
 <br>
-4. The source code, the github project we are working on, is pulled  into the Go Remote container on `go/src/github.com/project/`. And that's the path we need to open remotely in order code, debug and test. It's important to note that both the code on VS Code IDE and the terminals opened from VS Code will be running from the Dev Pod's image and from within the worker node. Any command like `kubectl` or `oc` will reach the kubeapi from within the cluster. Therefore the kubeconfig file also needs to mounted on the Pod. Check the how to configure a dev environment with go-remote operator.
+4. The source code, the github project we are working on, is pulled  into the Go Remote container on `go/src/github.com/project/`. And that's the path we need to open remotely in order to code, debug and test. It's important to note that both the code on VS Code IDE and the terminals opened from VS Code will be running from the Dev Pod's image and from within the worker node. Any command like `kubectl` or `oc` will reach the kubeapi from within the cluster. Therefore the kubeconfig file also needs to mounted on the Pod. Check the how to configure a dev environment with go-remote operator.
 <br>
-5. At this point there is a set of specific packages that are being used for the development container image. But any development image may be built and set on the go-remote operator CR. So if you have a different set of requirements or a ready to go image you only need to change the go-remote image field on the CR pointing it to your registry. One cool future feature is adding the build capability to the go-remote operator. That would allow for updating the packages and requirements automatically.
+5. At this point there is a set of specific packages that are being used for the development container image. But any development image may be built and set on the go-remote operator CR. So if you have a different set of requirements or a ready to go image you only need to change the go-remote image field on the CR pointing it to your registry. One cool future feature is adding the build capability to the go-remote operator. That would allow for updating the packages and requirements automatically. Another nice element to note is that it's not restricted to Golang. It can be any language supported by VS Code.
 <br>
-6. Finally Supervisord is the one that allows for multiple processes running inside this Pod and exposing ports as needed giving flexibility to model the service we want the way we want it. "...it is meant to be used to control processes related to a project or a customer, and is meant to start like any other program at boot time." Check http://supervisord.org/
+6. Finally Supervisord is the one that allows for multiple processes running inside this Pod and exposing ports as needed giving flexibility to model the service we want the way we want it. "...it is meant to be used to control processes related to a project or a customer, and is meant to start like any other program at boot time." Check http://supervisord.org/ So let's say you want to serve something on a specific port you can add that together with the 2222 that already serves the VS Code server.
 
 ---
 ## How to Install the Operator
@@ -55,29 +55,13 @@ Here is a high level overview of the go remote development environment and how i
 
 When writing an application we need to define service accounts, roles and role bindings for the Pods we are deploying with our code. Therefore, in order to have a similar environment to the actual application we need to have at hand all those manifests. If any SCC must be applied, in the OpenShift case for example, new roles must be built in order to apply those to the dev Pod.
 
-Under the manifests folder we can find a full example that applies to an operator that requires privileged access to the node. That said below we can see how to apply them:
-
-`oc apply -f manifests/`
-
-And the results should be:
-```
-namespace/pod-network-operator created
-clusterrole.rbac.authorization.k8s.io/manager-role created
-role.rbac.authorization.k8s.io/manager-role created
-clusterrolebinding.rbac.authorization.k8s.io/manager-rolebinding created
-rolebinding.rbac.authorization.k8s.io/manager-rolebinding created
-role.rbac.authorization.k8s.io/role-scc-privileged created
-rolebinding.rbac.authorization.k8s.io/rolebinding-priv-scc-pod-network-operator created
-serviceaccount/pod-network-operator-sa created
-```
+Under the config/rbac_application folder we can find a full example that applies to an operator that requires privileged access to the node. All we need is to replace those with the new application's RBAC files and when running `make deploy` later they should be deployed to the appropriate namespace to receive that application's workloads.
 
 #### Custom Resource Definition
 
-For the CRD, while we don't have a bundle for OLM to install it, we need to run:
+The CRD or Custom Resource Definition for our remote development environment is called goRemote. That will allow us to run `oc get goremote` and list which environments are running on our system and their configuration.
 
-`oc apply -f config/crd/bases/go-remote.opdev.io_goremotes.yaml`
-
-That will create this special type of resource that is called goRemote.
+This CRD is installed with the `make deploy` command as well.
 
 #### Finally Deploy the Operator
 
@@ -87,9 +71,42 @@ That will create this special type of resource that is called goRemote.
 
 `make deploy`
 
+You should see something like below coming up on the screen. Make sure no error messages appear:
+
+```
+/usr/local/bin/controller-gen "crd:trivialVersions=true" rbac:roleName=go-remote-manager-role webhook paths="./..." output:crd:artifacts:config=config/crd/bases
+cd config/manager && /usr/local/bin/kustomize edit set image controller=quay.io/opdev/go-remote:v0.0.1
+/usr/local/bin/kustomize build config/default | kubectl apply -f -
+namespace/go-remote-operator created
+namespace/pod-network-operator created
+customresourcedefinition.apiextensions.k8s.io/goremotes.go-remote.opdev.io created
+serviceaccount/go-remote-operator-sa created
+serviceaccount/pod-network-operator-sa created
+role.rbac.authorization.k8s.io/leader-election-role created
+role.rbac.authorization.k8s.io/pod-network-operator-manager-role created
+role.rbac.authorization.k8s.io/role-scc-privileged created
+clusterrole.rbac.authorization.k8s.io/go-remote-manager-role created
+clusterrole.rbac.authorization.k8s.io/pod-network-operator-manager-role created
+rolebinding.rbac.authorization.k8s.io/leader-election-rolebinding created
+rolebinding.rbac.authorization.k8s.io/manager-rolebinding created
+rolebinding.rbac.authorization.k8s.io/rolebinding-priv-scc-pod-network-operator created
+clusterrolebinding.rbac.authorization.k8s.io/go-remote-manager-rolebinding created
+clusterrolebinding.rbac.authorization.k8s.io/manager-rolebinding created
+deployment.apps/go-remote-operator created
+```
+
+Finally verify that you have the operator running on the go-remote-operator namespace:
+
+```
+oc get pods -n go-remote-operator
+NAME                                  READY   STATUS    RESTARTS   AGE
+go-remote-operator-856cbdb584-h6bhx   1/1     Running   0          4m1s
+```
 #### Configuring the Dev Environment
 
-Below we find the development environment for pod-network-operator example:
+Now we can deploy the operand. A.K.A the dev environment we're going to use. For that we need to configure it first.
+
+Below we can find the development environment for pod-network-operator example:
 
 ```
 apiVersion: go-remote.opdev.io/v1alpha1
@@ -158,7 +175,45 @@ spec:
     This is your dev namespace. It's where the dev environment will be deployed.
 
 
-#### Deploying Go Remote, Your Dev Environment:
+#### Deploying Go Remote, your Dev Environment:
+
+Once we have that CR ready we can deploy it like below:
+
+`oc apply -f config/samples/go-remote_v1alpha1_goremote.yaml`
+
+```
+goremote.go-remote.opdev.io/goremote-sample created
+```
+
+Now we can go to the namespace that we chose for our application and check for that new environment:
+
+`oc get pods -n pod-network-operator`
+
+```
+NAME                         READY   STATUS    RESTARTS   AGE
+go-remote-6fcbc758fd-mt9tx   1/1     Running   0          71s
+```
+
+This first iteration is deploying in OCP on AWS and therefore we need to grab the LB url to ssh into via VS Code into the remote environment. Here it goes:
+
+`oc get svc`
+
+```
+NAME            TYPE           CLUSTER-IP     EXTERNAL-IP                                                                 PORT(S)                         AGE
+go-remote-svc   LoadBalancer   172.30.17.68   a1590a18e20754dcfb0c671beb412b09-458278264.ca-central-1.elb.amazonaws.com   2222:31175/TCP,2345:31261/TCP   3m16s
+```
+
+Finally we may register that URL on our ssh configuration for VS Code to use it.
 
 
 
+
+
+Add that new host, the ELB, at the end of the file like below:
+
+```
+Host  a1590a18e20754dcfb0c671beb412b09-458278264.ca-central-1.elb.amazonaws.com  
+  HostName  a1590a18e20754dcfb0c671beb412b09-458278264.ca-central-1.elb.amazonaws.com   
+  Port 2222
+  User root
+```
