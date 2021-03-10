@@ -1325,7 +1325,7 @@ spec:
               goRemoteImage:
                 description: GoRemoteImage is the base image to run the environment
                 type: string
-              operatorNamespace:
+              goRemoteNamespace:
                 type: string
               serviceAccount:
                 type: string

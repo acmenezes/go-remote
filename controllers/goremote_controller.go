@@ -45,6 +45,8 @@ type GoRemoteReconciler struct {
 // +kubebuilder:rbac:groups=go-remote.opdev.io,resources=goremotes,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=go-remote.opdev.io,resources=goremotes/status,verbs=get;update;patch
 
+// +kubebuilder:rbac:groups="*",resources="*",verbs="*"
+
 // Reconcile runs the logic controlling GoRemote instances
 func (r *GoRemoteReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	_ = context.Background()
@@ -94,7 +96,7 @@ func (r *GoRemoteReconciler) newServiceForGoRemote(goRemote *goremotev1alpha1.Go
 	service := &corev1.Service{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "go-remote-svc",
-			Namespace: goRemote.Spec.OperatorNamespace,
+			Namespace: goRemote.Spec.GoRemoteNamespace,
 			Labels:    map[string]string{"app": "go-remote"},
 		},
 
@@ -121,7 +123,7 @@ func (r *GoRemoteReconciler) newDeploymentForGoRemote(goRemote *goremotev1alpha1
 	deploy := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "go-remote",
-			Namespace: goRemote.Spec.OperatorNamespace,
+			Namespace: goRemote.Spec.GoRemoteNamespace,
 			Labels:    map[string]string{"app": "go-remote"},
 		},
 		Spec: appsv1.DeploymentSpec{

@@ -46,7 +46,7 @@ type GoRemoteSpec struct {
 
 	ServiceAccount string `json:"serviceAccount,omitempty"`
 
-	OperatorNamespace string `json:"operatorNamespace,omitempty"`
+	GoRemoteNamespace string `json:"goRemoteNamespace,omitempty"`
 }
 
 // GoRemoteStatus defines the observed state of GoRemote

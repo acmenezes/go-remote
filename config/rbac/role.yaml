@@ -4,8 +4,14 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   creationTimestamp: null
-  name: manager-role
+  name: go-remote-manager-role
 rules:
+- apiGroups:
+  - '*'
+  resources:
+  - '*'
+  verbs:
+  - '*'
 - apiGroups:
   - go-remote.opdev.io
   resources:

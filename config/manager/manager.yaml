@@ -3,13 +3,13 @@ kind: Namespace
 metadata:
   labels:
     control-plane: controller-manager
-  name: system
+  name: go-remote-operator
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: controller-manager
-  namespace: system
+  name: go-remote-operator
+  namespace: go-remote-operator
   labels:
     control-plane: controller-manager
 spec:
@@ -22,6 +22,7 @@ spec:
       labels:
         control-plane: controller-manager
     spec:
+      serviceAccountName: go-remote-operator-sa    
       containers:
       - command:
         - /manager
@@ -31,9 +32,9 @@ spec:
         name: manager
         resources:
           limits:
-            cpu: 100m
-            memory: 30Mi
+            cpu: 500m
+            memory: 300Mi
           requests:
-            cpu: 100m
-            memory: 20Mi
+            cpu: 500m
+            memory: 200Mi
       terminationGracePeriodSeconds: 10

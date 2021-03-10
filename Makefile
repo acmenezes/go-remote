@@ -11,8 +11,11 @@ BUNDLE_DEFAULT_CHANNEL := --default-channel=$(DEFAULT_CHANNEL)
 endif
 BUNDLE_METADATA_OPTS ?= $(BUNDLE_CHANNELS) $(BUNDLE_DEFAULT_CHANNEL)
 
+# Kubeconfig file for go-remote secret
+KUBECONFIG ?= ~/.kube/config
+
 # Image URL to use all building/pushing image targets
-IMG ?= controller:latest
+IMG ?= quay.io/opdev/go-remote:v0.0.1
 # Produce CRDs that work back to Kubernetes 1.11 (no version conversion)
 CRD_OPTIONS ?= "crd:trivialVersions=true"
 
@@ -53,9 +56,13 @@ deploy: manifests kustomize
 	cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG}
 	$(KUSTOMIZE) build config/default | kubectl apply -f -
 
+# UnDeploy controller from the configured Kubernetes cluster in ~/.kube/config
+undeploy:
+	$(KUSTOMIZE) build config/default | kubectl delete -f -
+
 # Generate manifests e.g. CRD, RBAC etc.
 manifests: controller-gen
-	$(CONTROLLER_GEN) $(CRD_OPTIONS) rbac:roleName=manager-role webhook paths="./..." output:crd:artifacts:config=config/crd/bases
+	$(CONTROLLER_GEN) $(CRD_OPTIONS) rbac:roleName=go-remote-manager-role webhook paths="./..." output:crd:artifacts:config=config/crd/bases
 
 # Run go fmt against code
 fmt:
@@ -70,7 +77,7 @@ generate: controller-gen
 	$(CONTROLLER_GEN) object:headerFile="hack/boilerplate.go.txt" paths="./..."
 
 # Build the docker image
-docker-build: test
+docker-build: #test
 	docker build . -t ${IMG}
 
 # Push the docker image

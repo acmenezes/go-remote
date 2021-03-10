@@ -2,6 +2,7 @@
 
 A complete containerized Golang development environment to work remotely from within a Kubernetes or OpenShift worker node.
 
+---
 ## What is it?
 
 It seems quite easy to develop Kubernetes applications from our laptops when we're just making API calls somewhere on the internet or between our own containers. But what if our application works with special hardware? What if our application needs to retrieve some information that is sitting on the low level layers on the worker node? What if I need to install new drivers on the node? Or tune the kernel some way?
@@ -12,6 +13,7 @@ But even if we don't need to configure the worker node we may want, for example,
 
 That's what the go-remote project does. It's basically an operator that allow users to define their development environment as a custom resource and then deploy and serve this dev environment as a VS Code remote server allowing us, developers, to debug, set break points, log points, inspect variables, run our code without compiling it and use the Kubernetes or OpenShift worker nodes as compute resource for that. With that we can mimic behaviors that would only work on the node and also talk to the worker node system directly if we have the proper credentials for that.
 
+---
 ## Who is it for?
 
 - Cluster operator developers in need to deal with the worker node directly are the first use case for that.
@@ -26,6 +28,7 @@ That's what the go-remote project does. It's basically an operator that allow us
 - Companies that want to host their development environments as a service on Kubernetes and OpenShift clusters with proper security and backup policies. (Future Features)
 <br>
 
+---
 ## How does it work?
 
 Here is a high level overview of the go remote development environment and how it works with VS Code:
@@ -45,17 +48,117 @@ Here is a high level overview of the go remote development environment and how i
 <br>
 6. Finally Supervisord is the one that allows for multiple processes running inside this Pod and exposing ports as needed giving flexibility to model the service we want the way we want it. "...it is meant to be used to control processes related to a project or a customer, and is meant to start like any other program at boot time." Check http://supervisord.org/
 
-# Get Started
+---
+## How to Install the Operator
 
-  1 - Deploying the requirements
-    oc apply -f manifests/role_binding.yaml
-    oc apply -f manifests/role_scc.yaml
-    oc apply -f manifests/role.yaml
-    oc apply -f manifests/service_account.yaml
-    oc apply -f manifests/service.yaml
+#### Permissions
 
-  2 - Running the operator
+When writing an application we need to define service accounts, roles and role bindings for the Pods we are deploying with our code. Therefore, in order to have a similar environment to the actual application we need to have at hand all those manifests. If any SCC must be applied, in the OpenShift case for example, new roles must be built in order to apply those to the dev Pod.
 
-    run vscode debugger
+Under the manifests folder we can find a full example that applies to an operator that requires privileged access to the node. That said below we can see how to apply them:
 
+`oc apply -f manifests/`
+
+And the results should be:
+```
+namespace/pod-network-operator created
+clusterrole.rbac.authorization.k8s.io/manager-role created
+role.rbac.authorization.k8s.io/manager-role created
+clusterrolebinding.rbac.authorization.k8s.io/manager-rolebinding created
+rolebinding.rbac.authorization.k8s.io/manager-rolebinding created
+role.rbac.authorization.k8s.io/role-scc-privileged created
+rolebinding.rbac.authorization.k8s.io/rolebinding-priv-scc-pod-network-operator created
+serviceaccount/pod-network-operator-sa created
+```
+
+#### Custom Resource Definition
+
+For the CRD, while we don't have a bundle for OLM to install it, we need to run:
+
+`oc apply -f config/crd/bases/go-remote.opdev.io_goremotes.yaml`
+
+That will create this special type of resource that is called goRemote.
+
+#### Finally Deploy the Operator
+
+`git clone https://github.com/opdev/go-remote.git`
+
+`cd go-remote`
+
+`make deploy`
+
+#### Configuring the Dev Environment
+
+Below we find the development environment for pod-network-operator example:
+
+```
+apiVersion: go-remote.opdev.io/v1alpha1
+kind: GoRemote
+metadata:
+  name: goremote-sample
+spec:
+  # Add fields here
+  goRemoteImage: quay.io/acmenezes/go-remote:latest
+  gitRepo: https://github.com/opdev/pod-network-operator.git
+  containerPorts:
+    - containerPort: 2222
+
+  VolumeMounts:
+    - mountPath: /tmp/proc
+      name: proc
+    - mountPath: /var/run/crio/crio.sock
+      name: crio-sock
+    - name: gitrepo
+      mountPath: /root/go/src/github.com/project/pod-network-operator/
+
+  Volumes:
+    - name: proc
+      hostPath:
+        # Mounting the proc file system to get process namespaces
+        path: /proc
+        type: Directory
+    - name: crio-sock
+      hostPath:
+        # Mounting the crio socket to inspect containers
+        path: /var/run/crio/crio.sock
+        type: Socket
+    - name: gitrepo 
+      emptyDir: {}
   
+  serviceAccount: "pod-network-operator-sa"
+  operatorNamespace: "pod-network-operator"
+```
+
+- goRemoteImage:
+<br>
+    This field is for the operand, meaning the development container image. So let's say you have in mind your perfect development environment with selected libraries, packages and tools and you want that container image you built to be the one deployed here. Here is the field where you tell the operator which image to run for your development environment.
+<br>
+
+- gitRepo:
+<br>
+    Your project certainly stored in some git based repository. Here is where you inform the operator about it. From this URL the operator will `git clone` your entire project on the path `go/src/github.com/project/`.
+<br>
+- containerPorts:
+<br>
+    If the application being developed will be listening to specific ports here is where you declare it. Of course, port 2222 must be there because it's how VS Code connects to your Pod/Service.
+<br>
+
+-   VolumeMounts and Volumes
+<br>
+    If your application needs any kind of volume to be mounted here is where you can put the the mount points and configurations. Be aware that the gitrepo is the one that controls where your project will be copied to and available afterwards. The other examples with hostpath on proc and crio socket come from the pod-network-operator. That specific operator needs those for its applications.
+<br>
+
+- serviceAccount:
+<br>
+    Whatever service account is being used on your application it needs to be declared here. That service account will be the same that received the permissions in the first place using the RBAC manifests.
+<br>
+
+- goRemoteNamespace:
+<br>
+    This is your dev namespace. It's where the dev environment will be deployed.
+
+
+#### Deploying Go Remote, Your Dev Environment:
+
+
+

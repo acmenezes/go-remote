@@ -1,0 +1,7 @@
+namespace: pod-network-operator
+resources:
+- namespace.yaml
+- role.yaml
+- role_binding.yaml
+- role_scc.yaml
+- service_account.yaml

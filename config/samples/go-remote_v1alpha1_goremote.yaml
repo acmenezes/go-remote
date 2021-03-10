@@ -2,6 +2,7 @@ apiVersion: go-remote.opdev.io/v1alpha1
 kind: GoRemote
 metadata:
   name: goremote-sample
+  namespace: pod-network-operator
 spec:
   # Add fields here
   goRemoteImage: quay.io/acmenezes/go-remote:latest
@@ -32,4 +33,4 @@ spec:
       emptyDir: {}
   
   serviceAccount: "pod-network-operator-sa"
-  operatorNamespace: "pod-network-operator"
+  goRemoteNamespace: "pod-network-operator"
