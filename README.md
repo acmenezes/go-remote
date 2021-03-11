@@ -3,6 +3,9 @@
 A complete containerized Golang development environment to work remotely from within a Kubernetes or OpenShift worker node.
 
 ---
+#### Warning
+> This is for development environments/clusters only. The examples here have root privileges.
+---
 ## What is it?
 
 It seems quite easy to develop Kubernetes applications from our laptops when we're just making API calls somewhere on the internet or between our own containers. But what if our application works with special hardware? What if our application needs to retrieve some information that is sitting on the low level layers on the worker node? What if I need to install new drivers on the node? Or tune the kernel some way?
