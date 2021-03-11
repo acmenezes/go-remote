@@ -4,7 +4,7 @@
 
 When writing an application we need to define service accounts, roles and role bindings for the Pods we are deploying with our code. Therefore, in order to have a similar environment to the actual application we need to have at hand all those manifests. If any SCC must be applied, in the OpenShift case for example, new roles must be built in order to apply those to the dev Pod.
 
-Under the config/rbac_application folder we can find a full example that applies to an operator that requires privileged access to the node. All we need is to replace those with the new application's RBAC files and when running `make deploy` later they should be deployed to the appropriate namespace to receive that application's workloads.
+Under the `config/rbac_application` folder we can find a full example that applies to an operator that requires privileged access to the node. All we need is to replace those with the new application's RBAC files and when running `make deploy` later they should be deployed to the appropriate namespace to receive that application's workloads.
 
 #### Custom Resource Definition
 
