@@ -15,7 +15,7 @@ data:
     [program:git]
     autorestart = false
     directory = /root/go/src/github.com/project/
-    command = /usr/bin/git clone https://github.com/acmenezes/podconfig-operator.git
+    command = /usr/bin/git clone https://github.com/opdev/podconfig-operator.git
 
     [program:delve]
     directory = /root/go/src/github.com/project/podconfig-operator

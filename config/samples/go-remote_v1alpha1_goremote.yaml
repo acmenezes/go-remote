@@ -1,0 +1,36 @@
+apiVersion: go-remote.opdev.io/v1alpha1
+kind: GoRemote
+metadata:
+  name: goremote-sample
+  namespace: pod-network-operator
+spec:
+  # Add fields here
+  goRemoteImage: quay.io/acmenezes/go-remote:latest
+  gitRepo: https://github.com/opdev/pod-network-operator.git
+  containerPorts:
+    - containerPort: 2222
+
+  VolumeMounts:
+    - mountPath: /tmp/proc
+      name: proc
+    - mountPath: /var/run/crio/crio.sock
+      name: crio-sock
+    - name: gitrepo
+      mountPath: /root/go/src/github.com/project/pod-network-operator/
+
+  Volumes:
+    - name: proc
+      hostPath:
+        # Mounting the proc file system to get process namespaces
+        path: /proc
+        type: Directory
+    - name: crio-sock
+      hostPath:
+        # Mounting the crio socket to inspect containers
+        path: /var/run/crio/crio.sock
+        type: Socket
+    - name: gitrepo 
+      emptyDir: {}
+  
+  serviceAccount: "pod-network-operator-sa"
+  goRemoteNamespace: "pod-network-operator"

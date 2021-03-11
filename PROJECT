@@ -1,0 +1,11 @@
+domain: opdev.io
+layout: go.kubebuilder.io/v2
+projectName: go-remote
+repo: github.com/opdev/go-remote
+resources:
+- group: go-remote
+  kind: GoRemote
+  version: v1alpha1
+version: 3-alpha
+plugins:
+  go.sdk.operatorframework.io/v2-alpha: {}
