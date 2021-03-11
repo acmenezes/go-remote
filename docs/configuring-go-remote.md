@@ -45,26 +45,26 @@ spec:
 - goRemoteImage:
 <br>
     This field is for the operand, meaning the development container image. So let's say you have in mind your perfect development environment with selected libraries, packages and tools and you want that container image you built to be the one deployed here. Here is the field where you tell the operator which image to run for your development environment.
-<br>
+<br><br>
 
 - gitRepo:
 <br>
     Your project certainly stored in some git based repository. Here is where you inform the operator about it. From this URL the operator will `git clone` your entire project on the path `go/src/github.com/project/`.
-<br>
+<br><br>
 - containerPorts:
 <br>
     If the application being developed will be listening to specific ports here is where you declare it. Of course, port 2222 must be there because it's how VS Code connects to your Pod/Service.
-<br>
+<br><br>
 
 -   VolumeMounts and Volumes
 <br>
     If your application needs any kind of volume to be mounted here is where you can put the the mount points and configurations. Be aware that the gitrepo is the one that controls where your project will be copied to and available afterwards. The other examples with hostpath on proc and crio socket come from the pod-network-operator. That specific operator needs those for its applications.
-<br>
+<br><br>
 
 - serviceAccount:
 <br>
     Whatever service account is being used on your application it needs to be declared here. That service account will be the same that received the permissions in the first place using the RBAC manifests.
-<br>
+<br><br>
 
 - goRemoteNamespace:
 <br>
