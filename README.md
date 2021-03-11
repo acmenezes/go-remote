@@ -37,15 +37,25 @@ Here is a high level overview of the go remote development environment and how i
 
 <br><br>
 1. VS Code requires an SSH connection to the remote development environment. Through SSH it can run the VS Code Server and coordinate, through extensions, the IDE actions or tasks remotely. The SSH port is exposed externally via a Kubernetes service. If you are running Kubernetes or an OpenShift cluster in a Cloud Service Provider it will spin up a service with type LoadBalancer and expose SSH on port 2222. On how to use it instructions you will see how to get the LB url in order to connect your local VS Code to the remote environment.
+
 <br>
+
 2. The container itself can expose multiple different ports. It will be exposing SSH through port 2222 in order to avoid requesting privileges to bind low number ports. This will be the backend port for the VS Code / Go Remote service. Those ports are exposed through Supervisord that runs inside the Pod. It may be configured to expose multiple different ports for multiple processes/containers in the same Pod. The goal is to be able to mimic any application behavior on the development environment and still have extra ports like the 2222 for remote debugging.
+
 <br>
+
 3. The VS Code server is the one that does the hard work. It will coordinate the debugging actions on the remote code tree that will be accessed from the Go Remote Pod. If you want to understand better how VS Code remote works check out [here](https://code.visualstudio.com/docs/remote/remote-overview). Please remark that remote container development on VS Code documentation at this point in time is not remote Kubernetes development. It is for running VS Code from a local container running on the developers machine. Not on a cluster worker node.
+
 <br>
+
 4. The source code, the github project we are working on, is pulled  into the Go Remote container on `go/src/github.com/project/`. And that's the path we need to open remotely in order to code, debug and test. It's important to note that both the code on VS Code IDE and the terminals opened from VS Code will be running from the Dev Pod's image and from within the worker node. Any command like `kubectl` or `oc` will reach the kubeapi from within the cluster. Therefore the kubeconfig file also needs to mounted on the Pod. Check the how to configure a dev environment with go-remote operator.
+
 <br>
+
 5. At this point there is a set of specific packages that are being used for the development container image. But any development image may be built and set on the go-remote operator CR. So if you have a different set of requirements or a ready to go image you only need to change the go-remote image field on the CR pointing it to your registry. One cool future feature is adding the build capability to the go-remote operator. That would allow for updating the packages and requirements automatically. Another nice element to note is that it's not restricted to Golang. It can be any language supported by VS Code.
+
 <br>
+
 6. Finally Supervisord is the one that allows for multiple processes running inside this Pod and exposing ports as needed giving flexibility to model the service we want the way we want it. "...it is meant to be used to control processes related to a project or a customer, and is meant to start like any other program at boot time." Check http://supervisord.org/ So let's say you want to serve something on a specific port you can add that together with the 2222 that already serves the VS Code server.
 
 ---
