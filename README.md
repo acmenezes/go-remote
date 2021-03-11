@@ -63,7 +63,9 @@ Here is a high level overview of the go remote development environment and how i
 Now that you have an idea on how it works you may try by yourself. Check the links below:
 
 [Installing the Operator](docs/installing-the-operator.md)
+
 [Configuring the Development Environment](docs/configuring-go-remote.md)
+
 [Deploying the Dev Container and Connecting](docs/deploying-and-connecting.md)
 
 
