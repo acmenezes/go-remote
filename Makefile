@@ -15,7 +15,7 @@ BUNDLE_METADATA_OPTS ?= $(BUNDLE_CHANNELS) $(BUNDLE_DEFAULT_CHANNEL)
 KUBECONFIG ?= ~/.kube/config
 
 # Image URL to use all building/pushing image targets
-IMG ?= quay.io/opdev/go-remote:v0.0.1
+IMG ?= quay.io/opdev/go-remote-operator:v0.0.1
 # Produce CRDs that work back to Kubernetes 1.11 (no version conversion)
 CRD_OPTIONS ?= "crd:trivialVersions=true"
 
