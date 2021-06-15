@@ -1,0 +1,40 @@
+apiVersion: go-remote.opdev.io/v1alpha1
+kind: GoRemote
+metadata:
+  name: goremote-snoopy
+  namespace: snoopy-operator
+spec:
+  # Add fields here
+  goRemoteImage: quay.io/acmenezes/go-remote:latest
+  gitRepo: https://github.com/acmenezes/snoopy-operator.git
+  containerPorts:
+    - containerPort: 2222
+
+  VolumeMounts:
+    - mountPath: /host/proc
+      name: proc
+    - mountPath: /var/run/crio/crio.sock
+      name: crio-sock
+    - name: gitrepo
+      mountPath: /root/go/src/github.com/project/snoopy-operator/
+    - name: pcap-data
+      mountPath: /pcap-data/
+
+  Volumes:
+    - name: proc
+      hostPath:
+        # Mounting the proc file system to get process namespaces
+        path: /proc
+        type: Directory
+    - name: crio-sock
+      hostPath:
+        # Mounting the crio socket to inspect containers
+        path: /var/run/crio/crio.sock
+        type: Socket
+    - name: gitrepo 
+      emptyDir: {}
+    - name: pcap-data
+      emptyDir: {}
+  
+  serviceAccount: "snoopy-operator-sa"
+  goRemoteNamespace: "snoopy-operator"
