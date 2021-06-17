@@ -1,11 +1,11 @@
 apiVersion: go-remote.fennecproject.io/v1alpha1
 kind: GoRemote
 metadata:
-  name: goremote-snoopy
+  name: snoopy-operator-dev
   namespace: snoopy-operator
 spec:
   # Add fields here
-  goRemoteImage: quay.io/acmenezes/go-remote:latest
+  goRemoteImage: quay.io/acmenezes/go-remote:centos8
   gitRepo: https://github.com/acmenezes/snoopy-operator.git
   containerPorts:
     - containerPort: 2222
