@@ -6,9 +6,9 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: (unknown)
   creationTimestamp: null
-  name: goremotes.go-remote.opdev.io
+  name: goremotes.go-remote.fennecproject.io
 spec:
-  group: go-remote.opdev.io
+  group: go-remote.fennecproject.io
   names:
     kind: GoRemote
     listKind: GoRemoteList

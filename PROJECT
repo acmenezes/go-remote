@@ -1,7 +1,7 @@
-domain: opdev.io
+domain: fennecproject.io
 layout: go.kubebuilder.io/v2
 projectName: go-remote
-repo: github.com/opdev/go-remote
+repo: github.com/fennec-project/go-remote
 resources:
 - group: go-remote
   kind: GoRemote

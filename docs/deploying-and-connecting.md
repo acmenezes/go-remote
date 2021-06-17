@@ -5,7 +5,7 @@ Once we have that CR ready we can deploy it like below:
 `oc apply -f config/samples/go-remote_v1alpha1_goremote.yaml`
 
 ```
-goremote.go-remote.opdev.io/goremote-sample created
+goremote.go-remote.fennecproject.io/goremote-sample created
 ```
 
 Now we can go to the namespace that we chose for our application and check for that new environment:

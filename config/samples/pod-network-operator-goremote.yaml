@@ -1,24 +1,22 @@
-apiVersion: go-remote.opdev.io/v1alpha1
+apiVersion: go-remote.fennecproject.io/v1alpha1
 kind: GoRemote
 metadata:
-  name: goremote-snoopy
-  namespace: snoopy-operator
+  name: pod-network-operator-goremote
+  namespace: pod-network-operator
 spec:
   # Add fields here
   goRemoteImage: quay.io/acmenezes/go-remote:latest
-  gitRepo: https://github.com/acmenezes/snoopy-operator.git
+  gitRepo: https://github.com/fennec-project/pod-network-operator.git
   containerPorts:
     - containerPort: 2222
 
   VolumeMounts:
-    - mountPath: /host/proc
+    - mountPath: /tmp/proc
       name: proc
     - mountPath: /var/run/crio/crio.sock
       name: crio-sock
     - name: gitrepo
-      mountPath: /root/go/src/github.com/project/snoopy-operator/
-    - name: pcap-data
-      mountPath: /pcap-data/
+      mountPath: /root/go/src/github.com/project/pod-network-operator/
 
   Volumes:
     - name: proc
@@ -33,8 +31,6 @@ spec:
         type: Socket
     - name: gitrepo 
       emptyDir: {}
-    - name: pcap-data
-      emptyDir: {}
   
-  serviceAccount: "snoopy-operator-sa"
-  goRemoteNamespace: "snoopy-operator"
+  serviceAccount: "pod-network-operator-sa"
+  goRemoteNamespace: "pod-network-operator"

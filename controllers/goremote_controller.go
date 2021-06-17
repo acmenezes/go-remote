@@ -31,7 +31,7 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	goremotev1alpha1 "github.com/opdev/go-remote/api/v1alpha1"
+	goremotev1alpha1 "github.com/fennec-project/go-remote/api/v1alpha1"
 )
 
 // GoRemoteReconciler reconciles a GoRemote object
@@ -42,8 +42,8 @@ type GoRemoteReconciler struct {
 	GoRemoteList *goremotev1alpha1.GoRemoteList
 }
 
-// +kubebuilder:rbac:groups=go-remote.opdev.io,resources=goremotes,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=go-remote.opdev.io,resources=goremotes/status,verbs=get;update;patch
+// +kubebuilder:rbac:groups=go-remote.fennecproject.io,resources=goremotes,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=go-remote.fennecproject.io,resources=goremotes/status,verbs=get;update;patch
 
 // +kubebuilder:rbac:groups="*",resources="*",verbs="*"
 

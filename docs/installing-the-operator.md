@@ -14,7 +14,7 @@ This CRD is installed with the `make deploy` command as well.
 
 #### Finally Deploy the Operator
 
-`git clone https://github.com/opdev/go-remote.git`
+`git clone https://github.com/fennec-project/go-remote.git`
 
 `cd go-remote`
 
@@ -24,11 +24,11 @@ You should see something like below coming up on the screen. Make sure no error 
 
 ```
 /usr/local/bin/controller-gen "crd:trivialVersions=true" rbac:roleName=go-remote-manager-role webhook paths="./..." output:crd:artifacts:config=config/crd/bases
-cd config/manager && /usr/local/bin/kustomize edit set image controller=quay.io/opdev/go-remote:v0.0.1
+cd config/manager && /usr/local/bin/kustomize edit set image controller=quay.io/fennec-project/go-remote:v0.0.1
 /usr/local/bin/kustomize build config/default | kubectl apply -f -
 namespace/go-remote-operator created
 namespace/pod-network-operator created
-customresourcedefinition.apiextensions.k8s.io/goremotes.go-remote.opdev.io created
+customresourcedefinition.apiextensions.k8s.io/goremotes.go-remote.fennecproject.io created
 serviceaccount/go-remote-operator-sa created
 serviceaccount/pod-network-operator-sa created
 role.rbac.authorization.k8s.io/leader-election-role created

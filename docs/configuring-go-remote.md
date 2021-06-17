@@ -5,14 +5,14 @@ Now we can deploy the operand. A.K.A the dev environment we're going to use. For
 Below we can find the development environment for pod-network-operator example:
 
 ```
-apiVersion: go-remote.opdev.io/v1alpha1
+apiVersion: go-remote.fennecproject.io/v1alpha1
 kind: GoRemote
 metadata:
   name: goremote-sample
 spec:
   # Add fields here
   goRemoteImage: quay.io/acmenezes/go-remote:latest
-  gitRepo: https://github.com/opdev/pod-network-operator.git
+  gitRepo: https://github.com/fennec-project/pod-network-operator.git
   containerPorts:
     - containerPort: 2222
 

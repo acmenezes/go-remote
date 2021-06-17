@@ -30,7 +30,7 @@ import (
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
-	goremotev1alpha1 "github.com/opdev/go-remote/api/v1alpha1"
+	goremotev1alpha1 "github.com/fennec-project/go-remote/api/v1alpha1"
 	// +kubebuilder:scaffold:imports
 )
 

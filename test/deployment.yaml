@@ -27,7 +27,7 @@ spec:
         - name: gitclone
           image: alpine:3.7
           command: ["/bin/sh","-c"]
-          args: ['apk add --no-cache git && git config --global http.sslVerify "false" && git clone https://github.com/opdev/pod-network-operator.git /tmp']
+          args: ['apk add --no-cache git && git config --global http.sslVerify "false" && git clone https://github.com/fennec-project/pod-network-operator.git /tmp']
           volumeMounts:
             - name: gitrepo
               mountPath: /tmp                 

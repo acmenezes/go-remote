@@ -27,8 +27,8 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
-	goremotev1alpha1 "github.com/opdev/go-remote/api/v1alpha1"
-	"github.com/opdev/go-remote/controllers"
+	goremotev1alpha1 "github.com/fennec-project/go-remote/api/v1alpha1"
+	"github.com/fennec-project/go-remote/controllers"
 	// +kubebuilder:scaffold:imports
 )
 
@@ -60,7 +60,7 @@ func main() {
 		MetricsBindAddress: metricsAddr,
 		Port:               9443,
 		LeaderElection:     enableLeaderElection,
-		LeaderElectionID:   "85ab36d1.opdev.io",
+		LeaderElectionID:   "85ab36d1.fennecproject.io",
 	})
 	if err != nil {
 		setupLog.Error(err, "unable to start manager")
