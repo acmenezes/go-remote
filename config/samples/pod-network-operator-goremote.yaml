@@ -1,21 +1,13 @@
 apiVersion: go-remote.fennecproject.io/v1alpha1
 kind: GoRemote
 metadata:
-<<<<<<< HEAD:config/samples/pod-network-operator-goremote.yaml
   name: pod-network-operator-goremote
   namespace: pod-network-operator
-spec:
-  # Add fields here
-  goRemoteImage: quay.io/acmenezes/go-remote:latest
-  gitRepo: https://github.com/fennec-project/pod-network-operator.git
-=======
-  name: pod-network-operator-dev
-  namespace: pod-network-operator
+  
 spec:
   # Add fields here
   goRemoteImage: quay.io/acmenezes/go-remote:centos8
-  gitRepo: https://github.com/opdev/pod-network-operator.git
->>>>>>> CHANGE samples and build new image:config/samples/go-remote-pod-network-operator.yaml
+  gitRepo: https://github.com/fennec-project/pod-network-operator.git
   containerPorts:
     - containerPort: 2222
 
