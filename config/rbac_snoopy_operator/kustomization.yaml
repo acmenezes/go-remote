@@ -1,0 +1,10 @@
+# Adds namespace to all resources in this folder.
+namespace: snoopy-operator
+
+resources:
+- namespace.yaml
+- role_binding.yaml
+- role_scc.yaml
+- role.yaml
+- service_account.yaml
+
