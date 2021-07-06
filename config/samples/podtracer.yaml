@@ -5,7 +5,7 @@ metadata:
   namespace: podtracer
 spec:
   # Add fields here
-  goRemoteImage: quay.io/acmenezes/go-remote:centos8
+  goRemoteImage: quay.io/fennec-project/go-remote:centos8
   gitRepo: https://github.com/fennec-project/podtracer.git
   containerPorts:
     - containerPort: 2222
