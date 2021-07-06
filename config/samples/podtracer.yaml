@@ -1,12 +1,12 @@
 apiVersion: go-remote.fennecproject.io/v1alpha1
 kind: GoRemote
 metadata:
-  name: snoopy-operator-dev
-  namespace: snoopy-operator
+  name: podtracer-dev
+  namespace: podtracer
 spec:
   # Add fields here
   goRemoteImage: quay.io/acmenezes/go-remote:centos8
-  gitRepo: https://github.com/fennec-project/snoopy-operator.git
+  gitRepo: https://github.com/fennec-project/podtracer.git
   containerPorts:
     - containerPort: 2222
 
@@ -16,7 +16,7 @@ spec:
     - mountPath: /var/run/crio/crio.sock
       name: crio-sock
     - name: gitrepo
-      mountPath: /root/go/src/github.com/project/snoopy-operator/
+      mountPath: /root/go/src/github.com/project/podtracer/
     - name: pcap-data
       mountPath: /pcap-data/
 
@@ -36,5 +36,5 @@ spec:
     - name: pcap-data
       emptyDir: {}
   
-  serviceAccount: "snoopy-operator-sa"
-  goRemoteNamespace: "snoopy-operator"
+  serviceAccount: "podtracer-sa"
+  goRemoteNamespace: "podtracer"
