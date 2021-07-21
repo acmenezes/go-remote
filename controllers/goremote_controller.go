@@ -37,9 +37,8 @@ import (
 // GoRemoteReconciler reconciles a GoRemote object
 type GoRemoteReconciler struct {
 	client.Client
-	Log          logr.Logger
-	Scheme       *runtime.Scheme
-	GoRemoteList *goremotev1alpha1.GoRemoteList
+	Log    logr.Logger
+	Scheme *runtime.Scheme
 }
 
 // +kubebuilder:rbac:groups=go-remote.fennecproject.io,resources=goremotes,verbs=get;list;watch;create;update;patch;delete
@@ -53,32 +52,24 @@ func (r *GoRemoteReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	_ = r.Log.WithValues("goremote", req.NamespacedName)
 
 	// get the list of goRemote CRs loop through them
-	r.GoRemoteList = &goremotev1alpha1.GoRemoteList{}
-	err := r.Client.List(context.TODO(), r.GoRemoteList)
-
+	GoRemote := &goremotev1alpha1.GoRemote{}
+	err := r.Get(context.TODO(), req.NamespacedName, GoRemote)
 	if err != nil {
 		return reconcile.Result{}, err
 	}
 
-	if len(r.GoRemoteList.Items) <= 0 {
-		return reconcile.Result{}, nil
+	// create one deployment per CR
+
+	deploy := r.newDeploymentForGoRemote(GoRemote)
+	err = r.Client.Create(context.TODO(), deploy)
+	if err != nil {
+		return reconcile.Result{}, err
 	}
 
-	// create one deployment per CR
-	for _, goRemote := range r.GoRemoteList.Items {
-
-		deploy := r.newDeploymentForGoRemote(&goRemote)
-		err := r.Client.Create(context.TODO(), deploy)
-		if err != nil {
-			return reconcile.Result{}, err
-		}
-
-		service := r.newServiceForGoRemote(&goRemote)
-		err = r.Client.Create(context.TODO(), service)
-		if err != nil {
-			return reconcile.Result{}, err
-		}
-
+	service := r.newServiceForGoRemote(GoRemote)
+	err = r.Client.Create(context.TODO(), service)
+	if err != nil {
+		return reconcile.Result{}, err
 	}
 
 	return reconcile.Result{}, nil
