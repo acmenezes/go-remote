@@ -1327,6 +1327,11 @@ spec:
                 type: string
               goRemoteNamespace:
                 type: string
+              nodeSelector:
+                additionalProperties:
+                  type: string
+                description: Node selector for development nodes
+                type: object
               serviceAccount:
                 type: string
               servicePorts:

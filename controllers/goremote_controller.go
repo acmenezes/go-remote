@@ -137,6 +137,7 @@ func (r *GoRemoteReconciler) newDeploymentForGoRemote(goRemote *goremotev1alpha1
 				},
 				Spec: corev1.PodSpec{
 					ServiceAccountName: goRemote.Spec.ServiceAccount,
+					NodeSelector:       goRemote.Spec.NodeSelector,
 					InitContainers: []corev1.Container{
 						{
 							Name:    "gitclone",

@@ -37,6 +37,9 @@ type GoRemoteSpec struct {
 	// for the servive being developed
 	ContainerPorts []corev1.ContainerPort `json:"containerPorts,omitempty"`
 
+	// Node selector for development nodes
+	NodeSelector map[string]string `json:"nodeSelector,omitempty"`
+
 	// Service ports
 	ServicePorts []corev1.ServicePort `json:"servicePorts,omitempty"`
 

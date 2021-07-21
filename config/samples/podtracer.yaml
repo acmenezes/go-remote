@@ -9,7 +9,8 @@ spec:
   gitRepo: https://github.com/fennec-project/podtracer.git
   containerPorts:
     - containerPort: 2222
-
+  nodeSelector:
+    cnf-telco: "true"
   VolumeMounts:
     - mountPath: /host/proc
       name: proc
