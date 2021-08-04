@@ -20,7 +20,6 @@ yum install -y util-linux-user; chsh -s /bin/zsh; wget https://github.com/robbyr
 
 COPY supervisord.conf /etc/supervisord.conf
 COPY sshd_config /etc/ssh/sshd_config
-COPY kubeconfig /root/.kube/config
 COPY .zshrc /root/.zshrc
 
 EXPOSE 2222
