@@ -10,8 +10,9 @@ spec:
   gitRepo: https://github.com/fennec-project/pod-network-operator.git
   containerPorts:
     - containerPort: 2222
-  nodeSelector:
+  nodeSelector: 
     cnf-telco: "true"
+
   VolumeMounts:
     - mountPath: /tmp/proc
       name: proc

@@ -31,19 +31,17 @@ type GoRemoteSpec struct {
 
 	// GoRemoteImage is the base image to run the environment
 	GoRemoteImage string `json:"goRemoteImage,omitempty"`
+
 	// GitRepo is the project under development URL in github, gitlab or any git based server
 	GitRepo string `json:"gitRepo,omitempty"`
 	// ContainerPorts are the ports that should be exposed by the go-remote container
 	// for the servive being developed
 	ContainerPorts []corev1.ContainerPort `json:"containerPorts,omitempty"`
 
-	// Node selector for development nodes
 	NodeSelector map[string]string `json:"nodeSelector,omitempty"`
 
-	// Service ports
 	ServicePorts []corev1.ServicePort `json:"servicePorts,omitempty"`
 
-	// Extra volumes that should be mounted for the container
 	Volumes      []corev1.Volume      `json:"Volumes,omitempty"`
 	VolumeMounts []corev1.VolumeMount `json:"VolumeMounts,omitempty"`
 
@@ -52,10 +50,27 @@ type GoRemoteSpec struct {
 	GoRemoteNamespace string `json:"goRemoteNamespace,omitempty"`
 }
 
+// type ConditionType string
+
+// const (
+// 	ConditionTypeReady      ConditionType = "Ready"
+// 	ConditionTypeInProgress ConditionType = "InProgress"
+// 	ConditionTypeFailed     ConditionType = "Failed"
+// 	ConditionTypeUnknown    ConditionType = "Unknown"
+// )
+
+// type Condition struct {
+// 	Type               ConditionType `json:"type,omitempty"`
+// 	Status             bool          `json:"status,omitemtpy"`
+// 	Reason             string        `json:"reason,omitempty"`
+// 	Message            string        `json:"message,omitempty"`
+// 	LastHeartbeatTime  string        `json:"lastHeartbeatTime,omitempty"`
+// 	LastTransitionTime string        `json:"lastTransitionTime,omitempty"`
+// }
+
 // GoRemoteStatus defines the observed state of GoRemote
 type GoRemoteStatus struct {
-	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+	// condition Condition
 }
 
 // +kubebuilder:object:root=true

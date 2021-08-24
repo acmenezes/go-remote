@@ -9,7 +9,7 @@ spec:
   gitRepo: https://github.com/fennec-project/snoopy-operator.git
   containerPorts:
     - containerPort: 2222
-  nodeSelector:
+  nodeSelector: 
     cnf-telco: "true"
   VolumeMounts:
     - mountPath: /host/proc

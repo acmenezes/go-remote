@@ -75,7 +75,6 @@ spec:
                   type: object
                 type: array
               Volumes:
-                description: Extra volumes that should be mounted for the container
                 items:
                   description: Volume represents a named volume in a pod that may
                     be accessed by any container in the pod.
@@ -1330,12 +1329,10 @@ spec:
               nodeSelector:
                 additionalProperties:
                   type: string
-                description: Node selector for development nodes
                 type: object
               serviceAccount:
                 type: string
               servicePorts:
-                description: Service ports
                 items:
                   description: ServicePort contains information on service's port.
                   properties:

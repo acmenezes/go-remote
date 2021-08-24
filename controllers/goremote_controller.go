@@ -37,8 +37,9 @@ import (
 // GoRemoteReconciler reconciles a GoRemote object
 type GoRemoteReconciler struct {
 	client.Client
-	Log    logr.Logger
-	Scheme *runtime.Scheme
+	Log      logr.Logger
+	Scheme   *runtime.Scheme
+	GoRemote *goremotev1alpha1.GoRemote
 }
 
 // +kubebuilder:rbac:groups=go-remote.fennecproject.io,resources=goremotes,verbs=get;list;watch;create;update;patch;delete
@@ -57,12 +58,14 @@ func (r *GoRemoteReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	if err != nil {
 		return reconcile.Result{}, err
 	}
+	r.GoRemote = GoRemote
 
 	// create one deployment per CR
 
 	deploy := r.newDeploymentForGoRemote(GoRemote)
 	err = r.Client.Create(context.TODO(), deploy)
 	if err != nil {
+
 		return reconcile.Result{}, err
 	}
 

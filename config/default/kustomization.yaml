@@ -17,7 +17,6 @@ bases:
 - ../rbac
 - ../rbac_pod_network_operator
 - ../rbac_snoopy_operator
-- ../rbac_podtracer
 - ../manager
 # [WEBHOOK] To enable webhook, uncomment all the sections with [WEBHOOK] prefix including the one in
 # crd/kustomization.yaml
