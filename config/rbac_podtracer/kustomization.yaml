@@ -1,8 +1,0 @@
-# Adds namespace to all resources in this folder.
-namespace: podtracer
-
-resources:
-- namespace.yaml
-- role_scc.yaml
-- service_account.yaml
-
